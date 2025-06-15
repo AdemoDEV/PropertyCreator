@@ -4,7 +4,7 @@ import { Eye, DollarSign, Trash2, KeyRound, Link2, FileText } from "lucide-react
 
 const appartdisponible = [
   {
-    name: "Appartement 1",
+    name: "Rue de Ademo Blaize",
     img: "/images/test1.png",
     rentPrice: 2200,
     buyPrice: 88000,
