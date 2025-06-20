@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { MapPin, ChevronLeft, ChevronRight, Check, Home, BadgeDollarSign, Layers, House } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, Check, FolderDot, Home, BadgeDollarSign, Layers, House } from "lucide-react";
 import "./creationPropriete.css";
+import { notify } from "../utils/Notify";
 
 const propertyModels = {
   "Bas de gamme": [
@@ -26,6 +27,7 @@ const garages = [
 export default function PropertyCreator() {
   const [nom, setNom] = useState("");
   const [prix, setPrix] = useState("");
+  const [rent, setRent] = useState('');
   const [categorie, setCategorie] = useState("Bas de gamme");
   const [modelIndex, setModelIndex] = useState(0);
   const [modelSelected, setModelSelected] = useState(false);
@@ -91,19 +93,21 @@ export default function PropertyCreator() {
   };
 
   const handleSubmit = () => {
-    if (!nom || !prix) {
-      alert("Nom et prix obligatoires");
+    if (!nom || !prix || !rent) {
+      notify({title: "Erreur", message: "Veuillez remplir tous les champs obligatoires.", timeout: 3000, advanced: false, dark: true});
       return;
     }
 
     if (HouseEnabled && garageEnabled) {
         if (!positionEntree || !positionSortie || !garageEntree || !garageSortie) {
-            alert("Veuillez définir toutes les positions (entrée, sortie, garage entrée, garage sortie)");
+            notify({title: "Erreur", message: "Veuillez définir toutes les positions (entrée, sortie, garage entrée, garage sortie)", timeout: 3000, advanced: false, dark: false});
             return;
         }
         const payload = {
+            type: "property_all",
             nom,
             prix: Number(prix),
+            rent: Number(rent),
             categorie,
             modele: currentModel,
             positionEntree,
@@ -115,15 +119,17 @@ export default function PropertyCreator() {
             } : null,
         };
         console.log(payload);
-    alert("Maison et Garage crée !");
+    notify({title: "Succès", message: "Propriété et garage créés !", timeout: 3000, advanced: false, dark: false});
     } else if (HouseEnabled) {
         if (!positionEntree || !positionSortie) {
-            alert("Veuillez définir les positions d'entrée et de sortie de la maison");
+            notify({title: "Erreur", message: "Veuillez définir les positions d'entrée et de sortie de la maison", timeout: 3000, advanced: false, dark: false});
             return;
         }
         const payload = {
+            type: "property",
             nom,
             prix: Number(prix),
+            rent: Number(rent),
             categorie,
             modele: currentModel,
             positionEntree,
@@ -131,23 +137,25 @@ export default function PropertyCreator() {
             garage: null,
         };
         console.log(payload);
-        alert("Maison créée !");
+        notify({title: "Succès", message: "Maison créée !", timeout: 3000, advanced: false, dark: false});
     } else if (garageEnabled) {
         if (!garageEntree || !garageSortie) {
-            alert("Veuillez définir les positions d'entrée et de sortie du garage");        
+            notify({title: "Erreur", message: "Veuillez définir les positions d'entrée et de sortie du garage", timeout: 3000, advanced: false, dark: false});
             return;
         }
         const payload = {
+            type: "garage",
             nom,
             prix: Number(prix),
+            rent: Number(rent),
             garage: currentGarage,
             positionEntree: garageEntree,
             positionSortie: garageSortie,
         };
         console.log(payload);
-        alert("Garage créé !");
+        notify({title: "Succès", message: "Garage créé !", timeout: 3000, advanced: false, dark: false});
     } else {
-        alert("Veuillez activer au moins une option (propriété ou garage)");   
+        notify({title: "Erreur", message: "Veuillez activer au moins une option (maison ou garage).", timeout: 3000, advanced: false, dark: false});
         return;    
     }                
   };
@@ -173,6 +181,19 @@ export default function PropertyCreator() {
             min="0"
             value={prix}
             onChange={(e) => setPrix(e.target.value)}
+            onWheel={(e) => e.target.blur()}
+          />
+        </div>
+
+        <div className="input-parent-price">
+          <FolderDot size={16} className="input-price" />
+          <input
+            type="number"
+            style={{ paddingLeft: 36, appearance: "textfield" }}
+            placeholder="Prix de la location"
+            min="0"
+            value={rent}
+            onChange={(e) => setRent(e.target.value)}
             onWheel={(e) => e.target.blur()}
           />
         </div>

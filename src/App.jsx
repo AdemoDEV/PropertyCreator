@@ -1,8 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import PropertyCreator from "./components/CreationPropriete";
-import PropertyPanel from "./components/buyPropriete";
+import PropertyCreator from "./components/Propretie/CreationPropriete";
+import PropertyPanel from "./components/Propretie/buyPropriete";
 import Notifications from "./components/Notification/notifications";
+import '../src/font/font.css';
 
 
 function App() {

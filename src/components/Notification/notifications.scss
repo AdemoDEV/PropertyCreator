@@ -1,5 +1,5 @@
 $red: #dd3131;
-$green: #e62677;
+$green: rgba(18, 111, 233, 0.623);
 $blue: #3690bd;
 $yellow: #ffd149;
 
@@ -21,6 +21,19 @@ $yellow: #ffd149;
 }
 .color-white {
 	color: white;
+}
+
+.test-button {
+	width: auto;
+	height: 50px;
+	background-color: rgba(18, 111, 233, 0.623);
+	border-radius: 12px;
+	border-color: rgba(18, 111, 233, 0.623);
+	color: white;
+	font-family: "Gilroy-Bold";
+	text-shadow: 0 0px 7.5px rgba(18, 111, 233, 0.623);
+	text-transform: uppercase;
+	font-size: 14px;
 }
 
 .notifications-container-inui {
@@ -108,8 +121,8 @@ $yellow: #ffd149;
 		top: 7.5px;
 		left: -7.5px;
 
-		background-color: #e62677;
-		box-shadow: 0 0 10px #e62677;
+		background-color: rgba(18, 111, 233, 0.623);
+		box-shadow: 0 0 10px rgba(18, 111, 233, 0.623);
 
 		height: 2px;
 		width: 0%;
@@ -146,8 +159,8 @@ $yellow: #ffd149;
 
 		.title {
 			font-family: "Gilroy-Bold";
-			color: #e62677;
-			text-shadow: 0 0px 7.5px #e62677;
+			color: rgba(18, 111, 233, 0.623);
+			text-shadow: 0 0px 7.5px rgba(18, 111, 233, 0.623);
 			text-transform: uppercase;
 			font-size: 14px;
 		}
