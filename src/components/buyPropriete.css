@@ -12,6 +12,20 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Gilroy-Bold';
+  src: url('../font/Gilroy-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Gilroy-Medium';
+  src: url('../font/Gilroy-Medium.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 .property-panel {
   background-color: #1f1f1f;
   color: #fff;
