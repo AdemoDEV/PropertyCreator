@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapPin, ChevronLeft, ChevronRight, Check, Home, DollarSign, Layers } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, Check, Home, BadgeDollarSign, Layers, House } from "lucide-react";
 import "./creationPropriete.css";
 
 const propertyModels = {
@@ -30,6 +30,7 @@ export default function PropertyCreator() {
   const [modelIndex, setModelIndex] = useState(0);
   const [modelSelected, setModelSelected] = useState(false);
   const [garageEnabled, setGarageEnabled] = useState(false);
+  const [HouseEnabled, setHouseEnabled] = useState(false);
   const [garageIndex, setGarageIndex] = useState(0);
   const [garageSelected, setGarageSelected] = useState(false);
   const [positionEntree, setPositionEntree] = useState(null);
@@ -70,27 +71,85 @@ export default function PropertyCreator() {
     setGarageIndex((i) => (i - 1 + garages.length) % garages.length);
     setGarageSelected(false);
   };
+  const GetPosition = (type) => {
+       if (type === "all") {
+            if (!positionEntree || !positionSortie || !garageEntree || !garageSortie) {
+                alert("Veuillez définir toutes les positions (entrée, sortie, garage entrée, garage sortie)");
+                return;
+            }
+        } else if (type=== "maison") {
+            if (!positionEntree || !positionSortie) {
+                alert("Veuillez définir les positions d'entrée et de sortie de la maison");
+                return;
+            }
+        } else if (type === "garage") {
+            if (!garageEntree || !garageSortie) {
+                alert("Veuillez définir les positions d'entrée et de sortie du garage");
+                return;
+            }
+        }
+  };
 
   const handleSubmit = () => {
     if (!nom || !prix) {
       alert("Nom et prix obligatoires");
       return;
     }
-    const payload = {
-      nom,
-      prix: Number(prix),
-      categorie,
-      modele: currentModel,
-      positionEntree,
-      positionSortie,
-      garage: garageEnabled && garageSelected ? {
-        ...currentGarage,
-        positionEntree: garageEntree,
-        positionSortie: garageSortie
-      } : null,
-    };
-    console.log("Création de propriété", payload);
-    alert("Propriété créée !");
+
+    if (HouseEnabled && garageEnabled) {
+        if (!positionEntree || !positionSortie || !garageEntree || !garageSortie) {
+            alert("Veuillez définir toutes les positions (entrée, sortie, garage entrée, garage sortie)");
+            return;
+        }
+        const payload = {
+            nom,
+            prix: Number(prix),
+            categorie,
+            modele: currentModel,
+            positionEntree,
+            positionSortie,
+            garage: garageSelected ? {
+              ...currentGarage,
+              positionEntree: garageEntree,
+              positionSortie: garageSortie
+            } : null,
+        };
+        console.log(payload);
+    alert("Maison et Garage crée !");
+    } else if (HouseEnabled) {
+        if (!positionEntree || !positionSortie) {
+            alert("Veuillez définir les positions d'entrée et de sortie de la maison");
+            return;
+        }
+        const payload = {
+            nom,
+            prix: Number(prix),
+            categorie,
+            modele: currentModel,
+            positionEntree,
+            positionSortie,
+            garage: null,
+        };
+        console.log(payload);
+        alert("Maison créée !");
+    } else if (garageEnabled) {
+        if (!garageEntree || !garageSortie) {
+            alert("Veuillez définir les positions d'entrée et de sortie du garage");        
+            return;
+        }
+        const payload = {
+            nom,
+            prix: Number(prix),
+            garage: currentGarage,
+            positionEntree: garageEntree,
+            positionSortie: garageSortie,
+        };
+        console.log(payload);
+        alert("Garage créé !");
+    } else {
+        alert("Veuillez activer au moins une option (propriété ou garage)");   
+        return;    
+    }                
   };
 
   return (
@@ -101,52 +160,66 @@ export default function PropertyCreator() {
       </div>
 
       <div className="section">
-        <div style={{ position: "relative" }}>
-          <Home size={16} style={{ position: "absolute", top: "50%", left: 10, transform: "translateY(-50%)", color: "#888" }} />
-          <input style={{ paddingLeft: 36 }} placeholder="Nom de la propriété" value={nom} onChange={(e) => setNom(e.target.value)} />
+        <div className="input-parent">
+          <Home size={16} className="input-name" />
+          <input style={{ paddingLeft: 36 }} placeholder="Nom de la propriété ou garage" value={nom} onChange={(e) => setNom(e.target.value)} />
         </div>
-        <div style={{ position: "relative" }}>
-          <DollarSign size={16} style={{ position: "absolute", top: "50%", left: 10, transform: "translateY(-50%)", color: "#888" }} />
+        <div className="input-parent-price">
+          <BadgeDollarSign size={16} className="input-price" />
           <input
             type="number"
             style={{ paddingLeft: 36, appearance: "textfield" }}
-            placeholder="Prix ($)"
+            placeholder="Prix de la priopriété ou garage"
+            min="0"
             value={prix}
             onChange={(e) => setPrix(e.target.value)}
             onWheel={(e) => e.target.blur()}
           />
         </div>
-        <div style={{ position: "relative" }}>
-          <Layers size={16} style={{ position: "absolute", top: "50%", left: 10, transform: "translateY(-50%)", color: "#888" }} />
-          <select value={categorie} onChange={(e) => setCategorie(e.target.value)} style={{ paddingLeft: 36 }}>
-            {Object.keys(propertyModels).map((cat) => (
-              <option key={cat}>{cat}</option>
-            ))}
-          </select>
+        <div className="switch-block">
+            <div>
+              <span>Ajouter une propriété</span>
+              <br />
+              <small>Cette option ne peut pas être modifiée ultérieurement</small>
+            </div>
+            <div className={`switch-toggle ${HouseEnabled ? "active" : ""}`} onClick={() => setHouseEnabled((v) => !v)} />
         </div>
+        {HouseEnabled && (
+          <div style={{ position: "relative" }}>
+                <Layers size={16} style={{ position: "absolute", top: "50%", left: 10, transform: "translateY(-50%)", color: "#888" }} />
+                <select value={categorie} onChange={(e) => setCategorie(e.target.value)} style={{ paddingLeft: 36 }}>
+                  {Object.keys(propertyModels).map((cat) => (
+                    <option key={cat}>{cat}</option>
+                  ))}
+                </select>
+          </div>
+        )}
       </div>
 
-      <div className="property-preview">
-        <div className="property-controls">
-          <span onClick={precedentModele} style={{ cursor: "pointer" }}><ChevronLeft size={18} /></span>
-          <span onClick={suivantModele} style={{ cursor: "pointer" }}><ChevronRight size={18} /></span>
-        </div>
-        <img
-          src={currentModel.img}
-          alt={currentModel.name}
-          onClick={() => setModelSelected(true)}
-          style={{ cursor: "pointer" }}
-          title="Cliquer pour sélectionner ce modèle"
-        />
-        <span className="property-name">{currentModel.name}</span>
-      </div>
+       {HouseEnabled && (
+               <div className="property-preview">
+                 <div className="property-controls">
+                   <span onClick={precedentModele} style={{ cursor: "pointer" }}><ChevronLeft size={18} /></span>
+                   <span onClick={suivantModele} style={{ cursor: "pointer" }}><ChevronRight size={18} /></span>
+                 </div>
+                 <img
+                   src={currentModel.img}
+                   alt={currentModel.name}
+                   onClick={() => setModelSelected(true)}
+                   style={{ cursor: "pointer" }}
+                   title="Cliquer pour sélectionner ce modèle"
+                 />
+                 <span className="property-name">{currentModel.name}</span>
+               </div>
+           )}
 
-      {modelSelected && (
+      {HouseEnabled && modelSelected && (
         <div className="button-row fade-in">
           <button onClick={() => enregistrerPosition("entree")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position entrée</div></button>
           <button onClick={() => enregistrerPosition("sortie")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position sortie</div></button>
         </div>
       )}
+
 
       <div className="switch-block">
         <div>
@@ -182,8 +255,9 @@ export default function PropertyCreator() {
           )}
         </>
       )}
-
-      <button className="button-primary" onClick={handleSubmit}><Check size={16} style={{ marginRight: 6 }} /> Confirmer</button>
+      
+        <button className="button-primary" onClick={handleSubmit}><Check size={16} style={{ marginRight: 6 }} /> Confirmer</button>
+ 
     </div>
   );
 }
