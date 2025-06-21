@@ -5,23 +5,23 @@ import { notify } from "../utils/Notify";
 
 const propertyModels = {
   "Bas de gamme": [
-    { name: "Studio A", img: "/images/test1.png", desc: "Petit studio fonctionnel pour débutants." },
-    { name: "T1 Simple", img: "/images/test2.png", desc: "Appartement une pièce économique." },
+    { name: "Chambre d'Hotel", img: "/images/hotel.png", desc: "Petite Chambre d'hotel pour les arrivants." },
+    { name: "Appartement 1", img: "/images/appart_bas.png", desc: "Appartement une pièce économique." },
   ],
   "Moyen de gamme": [
-    { name: "T2 Confort", img: "/images/studio-a.png", desc: "Appartement deux pièces bien situé." },
-    { name: "Loft Urbain", img: "/images/studio-a.png", desc: "Loft moderne en centre-ville." },
+    { name: "Appartement 1", img: "/images/appart_moyen.png", desc: "Appartement deux pièces bien situé." },
   ],
   Luxe: [
-    { name: "Penthouse", img: "/images/studio-a.png", desc: "Vue imprenable avec prestations haut de gamme." },
-    { name: "Villa Bord de Mer", img: "/images/studio-a.png", desc: "Villa luxueuse avec accès plage." },
+    { name: "Penthouse (Rouge)", img: "/images/pent_rouge.png", desc: "Vue imprenable avec prestations haut de gamme." },
+    { name: "Penthouse (Blanc)", img: "/images/pent_blanc.png", desc: "Vue imprenable avec prestations haut de gamme." },
+    { name: "Villa", img: "/images/villa_lux.png", desc: "Villa luxueuse." },
   ],
 };
 
 const garages = [
-  { size: "2 places", img: "/images/studio-a.png", desc: "Garage pour 2 véhicules." },
-  { size: "4 places", img: "/images/studio-a.png", desc: "Garage pour 4 véhicules." },
-  { size: "10 places", img: "/images/studio-a.png", desc: "Garage spacieux pour collectionneurs." },
+  { size: "2 places", img: "/images/garage2.png", desc: "Garage pour 2 véhicules." },
+  { size: "4 places", img: "/images/garage4.png", desc: "Garage pour 4 véhicules." },
+  { size: "10 places", img: "/images/garage10.png", desc: "Garage spacieux pour collectionneurs." },
 ];
 
 export default function PropertyCreator() {
@@ -48,13 +48,23 @@ export default function PropertyCreator() {
     setModelSelected(false);
   }, [categorie]);
 
-  const enregistrerPosition = (type) => {
-    const pos = { x: 0, y: 0, z: 0 };
-    if (type === "entree") setPositionEntree(pos);
-    else if (type === "sortie") setPositionSortie(pos);
-    else if (type === "garage_entree") setGarageEntree(pos);
-    else if (type === "garage_sortie") setGarageSortie(pos);
-  };
+const enregistrerPosition = (type) => {
+  const pos = { x: 0, y: 0, z: 0 };          // ← récupère tes vraies coords ici
+  switch (type) {
+    case "entree":        setPositionEntree(pos);   break;
+    case "sortie":        setPositionSortie(pos);   break;
+    case "garage_entree": setGarageEntree(pos);     break;
+    case "garage_sortie": setGarageSortie(pos);     break;
+    default: return;
+  }
+  notify({
+    title: "Position enregistrée",
+    message: `La position « ${type.replace("_", " ")} » est définie.`,
+    timeout: 2500,
+    advanced: false,
+    dark: true
+  });
+};
 
   const suivantModele = () => {
     setModelIndex((i) => (i + 1) % propertyModels[categorie].length);
@@ -235,10 +245,37 @@ export default function PropertyCreator() {
            )}
 
       {HouseEnabled && modelSelected && (
-        <div className="button-row fade-in">
-          <button onClick={() => enregistrerPosition("entree")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position entrée</div></button>
-          <button onClick={() => enregistrerPosition("sortie")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position sortie</div></button>
-        </div>
+          <div className="button-row fade-in">
+              <button
+                className={positionEntree ? "btn-ok" : ""}
+                onClick={() => enregistrerPosition("entree")}
+              >
+                {positionEntree ? (
+                  <>
+                    <Check size={14} style={{ marginRight: 8 }} /> Entrée définie
+                  </>
+                ) : (
+                  <>
+                    <MapPin size={14} style={{ marginRight: 8 }} /> Position entrée
+                  </>
+                )}
+              </button>
+              
+              <button
+                className={positionSortie ? "btn-ok" : ""}
+                onClick={() => enregistrerPosition("sortie")}
+              >
+                {positionSortie ? (
+                  <>
+                    <Check size={14} style={{ marginRight: 8 }} /> Sortie définie
+                  </>
+                ) : (
+                  <>
+                    <MapPin size={14} style={{ marginRight: 8 }} /> Position sortie
+                  </>
+                )}
+              </button>
+            </div>
       )}
 
 
@@ -269,9 +306,36 @@ export default function PropertyCreator() {
           </div>
 
           {garageSelected && (
-            <div className="button-row fade-in">
-              <button onClick={() => enregistrerPosition("garage_entree")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position entrée garage</div></button>
-              <button onClick={() => enregistrerPosition("garage_sortie")}><div style={{ display: "flex", alignItems: "center" }}><MapPin size={14} style={{ marginRight: 8 }} /> Position sortie garage</div></button>
+           <div className="button-row fade-in">
+               <button
+                 className={garageEntree ? "btn-ok" : ""}
+                 onClick={() => enregistrerPosition("garage_entree")}
+               >
+                 {garageEntree ? (
+        <>
+          <Check size={14} style={{ marginRight: 8 }} /> Entrée garage défini
+        </>
+                 ) : (
+        <>
+          <MapPin size={14} style={{ marginRight: 8 }} /> Entrée garage
+        </>
+                 )}
+               </button>
+               
+               <button
+                 className={garageSortie ? "btn-ok" : ""}
+                 onClick={() => enregistrerPosition("garage_sortie")}
+               >
+                 {garageSortie ? (
+                   <>
+                     <Check size={14} style={{ marginRight: 8 }} /> Sortie garage défini
+                   </>
+                 ) : (
+                   <>
+                     <MapPin size={14} style={{ marginRight: 8 }} /> Sortie garage
+                   </>
+                 )}
+               </button>
             </div>
           )}
         </>
